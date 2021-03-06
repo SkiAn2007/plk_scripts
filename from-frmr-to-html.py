@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 # TODO: add check if exist block 'certs'
-# version: 3.0
+# version: 3.1
 
 import requests, json, sys, os, datetime
 from time import sleep
@@ -83,8 +83,12 @@ def getPersonJson(snils):
 def buildPersonCard(data):
 	global problemCases
 	employee = {}
-	employee['fio'] = data['general']['lastName'] + ' ' + data['general']['firstName'] + ' ' + data['general']['patronymic']
-	print('\r\n' + data['general']['snils'] + ' ' + employee['fio'])
+	print('\r\nProcessing: {0}'.format(data['general']['snils']))
+	fio = "{0} {1} {2}".format(data['general'].get('lastName', '-'),
+							   data['general'].get('firstName', '-'),
+							   data['general'].get('patronymic', '-'))
+	print(fio)
+	employee['fio'] = fio
 	cards_of_medic = []
 	if 'cards' in data:
 		for card in data['cards']:
@@ -238,7 +242,7 @@ for person in gdict['people']['parameter'][0]['valueCodeableConcept']:
 buildHtmlTable(result_d)
 
 # diagnostic prints
-print("\r\n====\r\n")
+print('\r\n====\r\n')
 for key, value in problemCasesDescription.items():
 	if problemCases[key]:
 		print(value, len(problemCases[key]))
@@ -250,6 +254,6 @@ print('Нет сертификата, но есть диплом:')
 no_cert_prof = list(set(problemCases['no_certs']) - set(problemCases['no_profs']))
 for name in no_cert_prof:
 	print(name)
-print("\r\n")
+print('\r\n')
 
 print('FINISH!')
